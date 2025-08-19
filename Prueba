@@ -1,0 +1,122 @@
+class Nodo {
+  constructor(valor) {
+    this.valor = valor;
+    this.siguiente = null;
+  }
+}
+
+class ListaSimple {
+  constructor() {
+    this.cabeza = null;
+  }
+
+  // 1️⃣ Inserción al inicio – O(1)
+  insertarInicio(valor) {
+    const nuevo = new Nodo(valor);
+    nuevo.siguiente = this.cabeza;
+    this.cabeza = nuevo;
+  }
+
+  // 2️⃣ Inserción al final – O(n)
+  insertarFinal(valor) {
+    const nuevo = new Nodo(valor);
+    if (!this.cabeza) {
+      this.cabeza = nuevo;
+    } else {
+      let actual = this.cabeza;
+      while (actual.siguiente) {
+        actual = actual.siguiente;
+      }
+      actual.siguiente = nuevo;
+    }
+  }
+
+  // 3️⃣ Inserción en posición específica – O(n)
+  insertarEnPosicion(valor, posicion) {
+    if (posicion < 0) return;
+
+    const nuevo = new Nodo(valor);
+    if (posicion === 0) {
+      nuevo.siguiente = this.cabeza;
+      this.cabeza = nuevo;
+      return;
+    }
+
+    let actual = this.cabeza;
+    let contador = 0;
+
+    while (actual && contador < posicion - 1) {
+      actual = actual.siguiente;
+      contador++;
+    }
+
+    if (!actual) return;
+    nuevo.siguiente = actual.siguiente;
+    actual.siguiente = nuevo;
+  }
+
+  // 4️⃣ Eliminación del primer nodo – O(1)
+  eliminarInicio() {
+    if (this.cabeza) {
+      this.cabeza = this.cabeza.siguiente;
+    }
+  }
+
+  // 5️⃣ Eliminación del último nodo – O(n)
+  eliminarFinal() {
+    if (!this.cabeza) return;
+    if (!this.cabeza.siguiente) {
+      this.cabeza = null;
+      return;
+    }
+
+    let actual = this.cabeza;
+    while (actual.siguiente.siguiente) {
+      actual = actual.siguiente;
+    }
+    actual.siguiente = null;
+  }
+
+  // 6️⃣ Eliminación en posición específica – O(n)
+  eliminarEnPosicion(posicion) {
+    if (posicion < 0 || !this.cabeza) return;
+    if (posicion === 0) {
+      this.eliminarInicio();
+      return;
+    }
+
+    let actual = this.cabeza;
+    let contador = 0;
+
+    while (actual.siguiente && contador < posicion - 1) {
+      actual = actual.siguiente;
+      contador++;
+    }
+
+    if (!actual.siguiente) return;
+    actual.siguiente = actual.siguiente.siguiente;
+  }
+}
+const { performance } = require("perf_hooks");
+
+function medirOperacion(nombre, operacion, repeticiones) {
+  const lista = new ListaSimple();
+  const inicio = performance.now();
+
+  for (let i = 0; i < repeticiones; i++) {
+    operacion(lista, i);
+  }
+
+  const fin = performance.now();
+  console.log(`⏱️ ${nombre} (${repeticiones} nodos): ${(fin - inicio).toFixed(2)} ms`);
+}
+
+// 🔹 Medir inserción al inicio (O(1))
+medirOperacion("Inserción al inicio", (lista, i) => lista.insertarInicio(i), 1000);
+medirOperacion("Inserción al inicio", (lista, i) => lista.insertarInicio(i), 10000);
+medirOperacion("Inserción al inicio", (lista, i) => lista.insertarInicio(i), 100000);
+
+// 🔸 Medir inserción al final (O(n))
+medirOperacion("Inserción al final", (lista, i) => lista.insertarFinal(i), 1000);
+medirOperacion("Inserción al final", (lista, i) => lista.insertarFinal(i), 10000);
+medirOperacion("Inserción al final", (lista, i) => lista.insertarFinal(i), 100000);
